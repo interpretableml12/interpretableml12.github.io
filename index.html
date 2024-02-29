@@ -1,1 +1,195 @@
-Hello world!
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en"><head>
+  <title>Source separation Project Page</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+
+<meta property="og:title" content="Explainig and Mitigating Attribute Imbalance" />
+
+<script src="lib.js" type="text/javascript"></script>
+<script src="popup.js" type="text/javascript"></script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-53682931-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<script type="text/javascript">
+// redefining default features
+var _POPUP_FEATURES = 'width=500,height=300,resizable=1,scrollbars=1,titlebar=1,status=1';
+</script>
+<link media="all" href="glab.css" type="text/css" rel="StyleSheet">
+<style type="text/css" media="all">
+IMG {
+	PADDING-RIGHT: 0px;
+	PADDING-LEFT: 0px;
+	FLOAT: right;
+	PADDING-BOTTOM: 0px;
+	PADDING-TOP: 0px
+}
+#primarycontent {
+	MARGIN-LEFT: auto; ; WIDTH: expression(document.body.clientWidth >
+1000? "1000px": "auto" ); MARGIN-RIGHT: auto; TEXT-ALIGN: left; max-width:
+1130px }
+BODY {
+	TEXT-ALIGN: center
+}
+
+
+table {
+    border-collapse: collapse;
+    border: 0;
+  }
+  th,
+  td {
+    border: 1px solid #aaa;
+    background-clip: padding-box;
+    scroll-snap-align: start;
+  }
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  thead {
+    z-index: 1000;
+    position: relative;
+  }
+  th,
+  td {
+    padding: 1.0rem;
+    min-width: 6rem;
+    text-align: center;
+    margin: 0;
+  }
+  thead th {
+    position: sticky;
+    top: 0;
+    border-top: 0;
+    background-clip: padding-box;
+  }
+  thead th.pin {
+    left: 0;
+    z-index: 1001;
+    border-left: 0;
+  }
+  tbody th {
+    background-clip: padding-box;
+    border-left: 0;
+  }
+  tbody {
+    z-index: 10;
+    position: relative;
+  }
+  tbody th {
+    position: sticky;
+    left: 0;
+  }
+  thead th,
+  tbody th {
+    background-color: #f8f8f8;
+  }
+
+#directiontest {
+    display: inline-flexbox;
+}
+
+</style>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({            
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}            
+  });
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+<meta content="MSHTML 6.00.2800.1400" name="GENERATOR"><script src="b5m.js" id="b5mmain" type="text/javascript"></script></head>
+
+<body>
+
+<div id="primarycontent">
+<center><h1>Explaining and Mitigating Attribute Imbalance</h1></center>
+
+<h2>Abstract</h2>
+
+<div style="font-size:16px">
+<p align="justify">
+  Neural networks often exhibit attribute imbalance, where
+  they rely on simple attributes over other crucial ones.
+  Recent studies focused on discovering novel imbalances in the form of bias-aligned and bias-conflicting groups.
+  However, precisely identifying imbalanced attributes has received relatively limited attention.
+  Especially in multi-channel source separation, existing methods are inapplicable, while the identification is important 
+  because manual inspection of every audio data is more time-consuming than in image.
+  In this work, we propose a counterfactual explanation and imbalance mitigation method, named Counterfactual Attribute Suppression (CAS).
+  CAS unambiguously identifies imbalanced attributes and effectively mitigates the identified imbalance. 
+  CAS is validated in image classification and sound source separation, with a particular emphasis on its efficacy in efficiently identifying imbalanced attributes and effectively leveraging worst-group performance in sound domain.
+</p>
+</div>
+
+<div id="userstudy">
+<h2>Effectivenss of Counterfactual Explanation</h2>
+
+<div style="font-size:16px"><p align="justify">
+  To demonstrate the effectiveness of our method (CAS), we compare two explanation methods: "Explanation Based on Random Samples" and "Counterfactual Explanation".
+  The group labels are given as $D_{easy}$, $D_{hard}$ and $D_{easy+hard}$.
+  In the explanation based on random samples, users identify the easy attribute causing imbalance by comparing samples between $D_{hard}$ and $D_{easy+hard}$. 
+  There are lots of attributes in samples, e.g, gender, timbre, spatial, speed and reverberation.
+  <br>
+  <br>
+  Therefore, it is challenging to identify which attribute contributes to imbalance by comparing $D_{hard}$ and $D_{easy+hard}$.
+  However, in the counterfactual explanation, users can readily find out the easy attribute by comparing a sample with its counterfactuals, 
+  employing the attribute suppression model, $f_{suppression}$, to suppress the easy attribute of samples from $D_{easy}$.
+  </p></div>
+
+
+<table>
+    <thead>
+      <tr>
+        <th class="pin"> </th>
+        <th>$D_{hard}$</th>
+        <th>$D_{easy+hard}$</th>
+        <th>$f_{suppresion}(D_{easy+hard})$</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <th>Case1</th>
+        <td><audio controls disableRemotePlayback src="./audio_src/C1.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+        <td><audio controls disableRemotePlayback src="./audio_src/A1.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+        <td><audio controls disableRemotePlayback src="./audio_src/A1_prime.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+      </tr>
+      <tr>
+        <th>Case2</th>
+        <td><audio controls disableRemotePlayback src="./audio_src/C2.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+        <td><audio controls disableRemotePlayback src="./audio_src/A2.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+        <td><audio controls disableRemotePlayback src="./audio_src/A2_prime.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+      </tr>
+      <tr>
+        <th>Case3</th>
+        <td><audio controls disableRemotePlayback src="./audio_src/C3.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+        <td><audio controls disableRemotePlayback src="./audio_src/A3.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+        <td><audio controls disableRemotePlayback src="./audio_src/A3_prime.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+      </tr>
+      <tr>
+        <th>Case4</th>
+        <td><audio controls disableRemotePlayback src="./audio_src/C4.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+        <td><audio controls disableRemotePlayback src="./audio_src/A4.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+        <td><audio controls disableRemotePlayback src="./audio_src/A4_prime.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+      </tr>
+      <tr>
+        <th>Case5</th>
+        <td><audio controls disableRemotePlayback src="./audio_src/C5.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+        <td><audio controls disableRemotePlayback src="./audio_src/A5.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+        <td><audio controls disableRemotePlayback src="./audio_src/A5_prime.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+      </tr>
+    </tbody>
+  </table>
+
+<br>
+
+
