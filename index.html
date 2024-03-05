@@ -25,13 +25,27 @@ var _POPUP_FEATURES = 'width=500,height=300,resizable=1,scrollbars=1,titlebar=1,
 </script>
 <link media="all" href="glab.css" type="text/css" rel="StyleSheet">
 <style type="text/css" media="all">
-IMG {
+<!-- IMG {
 	PADDING-RIGHT: 0px;
 	PADDING-LEFT: 0px;
-	FLOAT: right;
+	FLOAT: center;
 	PADDING-BOTTOM: 0px;
 	PADDING-TOP: 0px
+} -->
+
+figure {
+    text-align: center;
 }
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+
+
 #primarycontent {
 	MARGIN-LEFT: auto; ; WIDTH: expression(document.body.clientWidth >
 1000? "1000px": "auto" ); MARGIN-RIGHT: auto; TEXT-ALIGN: left; max-width:
@@ -91,11 +105,16 @@ table {
   }
   thead th,
   tbody th {
+    font-size: 15px;
     background-color: #f8f8f8;
   }
 
 #directiontest {
     display: inline-flexbox;
+}
+
+.center-container {
+    text-align: center;
 }
 
 </style>
@@ -111,85 +130,165 @@ table {
 
 <body>
 
+
 <div id="primarycontent">
-<center><h1>Explaining and Mitigating Attribute Imbalance</h1></center>
+<center><h1>소리 차이 인지 실험</h1></center>
 
-<h2>Abstract</h2>
 
-<div style="font-size:16px">
+
+<div style="font-size:20px">
 <p align="justify">
-  Neural networks often exhibit attribute imbalance, where
-  they rely on simple attributes over other crucial ones.
-  Recent studies focused on discovering novel imbalances in the form of bias-aligned and bias-conflicting groups.
-  However, precisely identifying imbalanced attributes has received relatively limited attention.
-  Especially in multi-channel source separation, existing methods are inapplicable, while the identification is important 
-  because manual inspection of every audio data is more time-consuming than in image.
-  In this work, we propose a counterfactual explanation and imbalance mitigation method, named Counterfactual Attribute Suppression (CAS).
-  CAS unambiguously identifies imbalanced attributes and effectively mitigates the identified imbalance. 
-  CAS is validated in image classification and sound source separation, with a particular emphasis on its efficacy in efficiently identifying imbalanced attributes and effectively leveraging worst-group performance in sound domain.
+    Speech separation은 섞인 목소리 (Mixture=Sound1 + Sound2)에서 Sound1, Sound2 각각의 소리를 분리하는 작업입니다. 
+    Neural Network는 소리의 특징을 활용하여 Mixture를 분리할 수 있습니다.
+    예를 들어, Sound1은 여성이고 Sound2가 남성인 경우 남성과 여성의 목소리 특징을 활용하여 소리를 분리할 수 있습니다. 
+    또 다른 예로, Sound1은 왼쪽 방향에서 들리고 Sound2가 오른쪽 방향에서 들린다면 소리의 위치를 기반으로 분리할 수 있습니다.
+    마지막으로, Sound1은 낮은 반향을 가지고 있고 Sound2가 높은 반향을 가진 경우 소리의 반향 정도를 이용하여 분리할 수 있습니다.
+    <br>
+
+    <h2>소리 특징 예시</h2>
+
+    <table>
+        <thead>
+          <tr>
+            <th style="border-left: none;">기준</th>
+            <th style="border-left: none;">Sound1</th>
+            <th style="border-right: none;">Sound2</th>
+          </tr>
+        </thead>
+    
+        <tbody>
+          <tr>
+            <td style="border-left: none;">성별 (Female vs. Male)</td>
+            <td style="border-left: none;"><audio controls disableRemotePlayback src="./audio_src/female.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+            <td style="border-right: none;"><audio controls disableRemotePlayback src="./audio_src/male.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+          </tr>
+          
+        </tbody>
+
+        <tbody>
+            <tr>
+              <td style="border-left: none;">소리의 방향 (왼쪽 vs. 오른쪽)</td>
+              <td style="border-left: none;"><audio controls disableRemotePlayback src="./audio_src/left.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+              <td style="border-right: none;"><audio controls disableRemotePlayback src="./audio_src/right.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+            </tr>
+            
+          </tbody>
+
+          <tbody>
+            <tr>
+              <td style="border-left: none;">반향 정도 (낮은 반향 vs. 높은 반향 )</td>
+              <td style="border-left: none;"><audio controls disableRemotePlayback src="./audio_src/low_reverb.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+              <td style="border-right: none;"><audio controls disableRemotePlayback src="./audio_src/high_reverb.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+            </tr>
+            
+          </tbody>
+      </table>
+
+
+    <h2>User study 문제 설명</h2>
+    <!-- 각 소리(Sound)의 특징에 대한 설명을 마쳤으니, 이제는 섞여 있는 목소리(Mixture)로 접근해보겠습니다.
+    Group A와 Group B에 해당하는 Mixture들이 주어집니다.
+    각 그룹의 Mixture를 듣고 비교한 후, 어떤 기준에 따라 그룹이 구분되었는지를 
+    주어진 옵션들 중에서 선택하는 문제입니다. 여러 기준이 있을 것으로 생각되면 해당하는 옵션들을 모두 선택해 주세요. -->
+
+    Group A와 Group B에 해당하는 Mixture들이 주어집니다. 
+    각 그룹의 Mixture는 위에서 설명한 3가지 특징 (성별, 소리의 방향, 반향 정도)중 하나를 가지고 소리를 분리할 수 있습니다.
+    예를 들어 Group A에 있는 Mixture는 성별을 기준으로 소리를 분리할 수 있는데,
+    Group B에 있는 Mixture는 그렇지 않다면 성별이라는 특징이 두 그룹을 구별할 수 있는 기준이 될 수 있습니다.
+    각 그룹의 Mixture를 듣고 비교한 후, 그룹을 구분할 수 있는 기준에 대한 답변을 선택해주세요. 
+    두 그룹을 구별하는 기준이 여러 개라고 생각된다면 해당하는 모든 특징들을 선택해 주세요.
+
+    <br>
+
+    <h2>문제 예시</h2>
+    
+    <h3>예시 1.</h3>
+    Group A의 mixture는 성별을 기준으로 sound1과 sound2를 분리할 수 있지만 (Male/Female), Group B의 mixture는 성별을 기준으로 소리를 분리할 수 없으므로 (Female/Female)
+    성별이 두 그룹을 나누는 기준이 될 수 있습니다. <br>
+
+    <table>
+        <thead>
+          <tr>
+            <th style="border-left: none;">Group A</th>
+            <th style="border-right: none;">Group B</th>
+          </tr>
+        </thead>
+    
+        <tbody>
+          <tr>
+            <td style="border-left: none;"><audio controls disableRemotePlayback src="./audio_src/8.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+            <td style="border-right: none;"><audio controls disableRemotePlayback src="./audio_src/9.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+          </tr>
+          
+        </tbody>
+      </table>
+    
+    <br>
+
+    <h3>예시 2.</h3>
+    Group A의 mixture의 sound1과 sound2는 모두 여성이므로 성별을 기준으로 분리할 수 없고, Group B의 mixture 또한 sound1 과 sound2가 모두 남성이므로 성별을 기준으로
+    구분할 수 없으므로 성별은 두 그룹을 구분하는 기준이 될 수 없습니다.
+
+    <table>
+        <thead>
+          <tr>
+            <th style="border-left: none;">Group A</th>
+            <th style="border-right: none;">Group B</th>
+          </tr>
+        </thead>
+    
+        <tbody>
+          <tr>
+            <td style="border-left: none;"><audio controls disableRemotePlayback src="./audio_src/98.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+            <td style="border-right: none;"><audio controls disableRemotePlayback src="./audio_src/97.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+          </tr>
+          
+        </tbody>
+      </table>
+    
+    <br>
+
+    <h3>예시 3.</h3>
+    Group A의 mixture에서 sound1은 중간~오른쪽방향에서 소리가 들리고, sound2는 왼쪽 방향에서 소리가 들리므로 방향을 기준으로 mixture를 분리할 수 있지만,
+    Group B의 mixture는 sound1과 sound2가 모두 왼쪽 방향에서 들리기 때문에 방향을 기준으로 mixture를 분리 할 수 없으므로 방향이 두 그룹을 나누는 기준이 될 수 있습니다.
+
+    <table>
+        <thead>
+          <tr>
+            <th style="border-left: none;">Group A</th>
+            <th style="border-right: none;">Group B</th>
+          </tr>
+        </thead>
+    
+        <tbody>
+          <tr>
+            <td style="border-left: none;"><audio controls disableRemotePlayback src="./audio_src/98.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+            <td style="border-right: none;"><audio controls disableRemotePlayback src="./audio_src/99.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
+          </tr>
+          
+        </tbody>
+      </table>
+    
+    <br>
+    
+
+    <div class="center-container">
+        <button onclick="redirectToNextPage()"><strong>다음 페이지</strong></button>
+    </div>
+
+    <script>
+        function redirectToNextPage() {
+            // 이동할 링크를 설정합니다.
+            const nextPageUrl = 'message.html';
+
+            // 현재 창에서 새로운 페이지로 이동합니다.
+            window.location.href = nextPageUrl;
+        }
+    </script>
+
+
 </p>
 </div>
 
-<div id="userstudy">
-<h2>Effectivenss of Counterfactual Explanation</h2>
-
-<div style="font-size:16px"><p align="justify">
-  To demonstrate the effectiveness of our method (CAS), we compare two explanation methods: "Explanation Based on Random Samples" and "Counterfactual Explanation".
-  The group labels are given as $D_{easy}$, $D_{hard}$ and $D_{easy+hard}$.
-  In the explanation based on random samples, users identify the easy attribute causing imbalance by comparing samples between $D_{hard}$ and $D_{easy+hard}$. 
-  There are lots of attributes in samples, e.g, gender, timbre, spatial, speed and reverberation.
-  <br>
-  <br>
-  Therefore, it is challenging to identify which attribute contributes to imbalance by comparing $D_{hard}$ and $D_{easy+hard}$.
-  However, in the counterfactual explanation, users can readily find out the easy attribute by comparing a sample with its counterfactuals, 
-  employing the attribute suppression model, $f_{suppression}$, to suppress the easy attribute of samples from $D_{easy}$.
-  </p></div>
-
-
-<table>
-    <thead>
-      <tr>
-        <th class="pin"> </th>
-        <th>$D_{hard}$</th>
-        <th>$D_{easy+hard}$</th>
-        <th>$f_{suppresion}(D_{easy+hard})$</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr>
-        <th>Case1</th>
-        <td><audio controls disableRemotePlayback src="./audio_src/C1.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
-        <td><audio controls disableRemotePlayback src="./audio_src/A1.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
-        <td><audio controls disableRemotePlayback src="./audio_src/A1_prime.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
-      </tr>
-      <tr>
-        <th>Case2</th>
-        <td><audio controls disableRemotePlayback src="./audio_src/C2.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
-        <td><audio controls disableRemotePlayback src="./audio_src/A2.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
-        <td><audio controls disableRemotePlayback src="./audio_src/A2_prime.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
-      </tr>
-      <tr>
-        <th>Case3</th>
-        <td><audio controls disableRemotePlayback src="./audio_src/C3.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
-        <td><audio controls disableRemotePlayback src="./audio_src/A3.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
-        <td><audio controls disableRemotePlayback src="./audio_src/A3_prime.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
-      </tr>
-      <tr>
-        <th>Case4</th>
-        <td><audio controls disableRemotePlayback src="./audio_src/C4.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
-        <td><audio controls disableRemotePlayback src="./audio_src/A4.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
-        <td><audio controls disableRemotePlayback src="./audio_src/A4_prime.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
-      </tr>
-      <tr>
-        <th>Case5</th>
-        <td><audio controls disableRemotePlayback src="./audio_src/C5.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
-        <td><audio controls disableRemotePlayback src="./audio_src/A5.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
-        <td><audio controls disableRemotePlayback src="./audio_src/A5_prime.wav">브라우저가 오디오를 지원하지 않습니다.</audio></td>
-      </tr>
-    </tbody>
-  </table>
-
-<br>
-
-
+</body>
+</html>
