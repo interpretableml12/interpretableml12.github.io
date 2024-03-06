@@ -15,10 +15,12 @@ function generateRandomUsername() {
 }
 
 function submitSurvey(type) {
+    const username = getUserName()
+    const timestamp = new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' })
     const surveyData = {
-        "user_name": getUserName(),
+        "user_name": username,
         "type": type,
-        timestamp: new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }),
+        "timestamp": timestamp,
         responses: {}
     };
 
@@ -52,7 +54,7 @@ function submitSurvey(type) {
             'Accept': 'application/vnd.github.v3+json'
         },
         body: JSON.stringify({
-            title: 'Multi-question Survey Response',
+            title: "소리차이 인지실험" + type + "_" + timestamp + "_" + username,
             body: JSON.stringify(surveyData)
         })
     })
